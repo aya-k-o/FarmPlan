@@ -1,6 +1,9 @@
 -- FarmPlan データベース初期化
 -- MySQLコンテナ初回起動時に自動実行される
 
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 CREATE DATABASE IF NOT EXISTS farmplan
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
