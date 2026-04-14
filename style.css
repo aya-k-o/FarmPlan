@@ -725,6 +725,25 @@ nav a.active {
   font-size: 7px;
 }
 
+/* ===== ログアウトボタン ===== */
+.btn-logout {
+  display: inline-block;
+  padding: 10px 24px;
+  background: white;
+  color: #c0392b;
+  border: 1.5px solid #e08080;
+  border-radius: 8px;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-logout:hover {
+  background: #fff5f5;
+}
+
 /* ===== レスポンシブ ===== */
 @media (max-width: 600px) {
   .stats-row { grid-template-columns: 1fr; }
