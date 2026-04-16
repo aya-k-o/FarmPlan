@@ -140,6 +140,11 @@ if ($field_id === null) {
           <div class="field-card-name"><?= htmlspecialchars($f['name'], ENT_QUOTES, 'UTF-8') ?></div>
           <div class="field-card-size"><?= $f['grid_rows'] ?>m × <?= $f['grid_cols'] ?>m（<?= $f['grid_rows'] * $f['grid_cols'] ?>区画）</div>
         </a>
+        <form method="post" action="field_delete.php"
+              onsubmit="return confirm('「<?= htmlspecialchars($f['name'], ENT_QUOTES, 'UTF-8') ?>」を削除しますか？\n栽培記録もすべて削除されます。')">
+          <input type="hidden" name="field_id" value="<?= $f['id'] ?>">
+          <button class="btn-delete-field" type="submit">削除</button>
+        </form>
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
@@ -151,7 +156,21 @@ if ($field_id === null) {
       <h1 class="page-title"><?= htmlspecialchars($field['name'], ENT_QUOTES, 'UTF-8') ?></h1>
       <p class="page-subtitle"><?= $field['grid_rows'] ?>m × <?= $field['grid_cols'] ?>m</p>
     </div>
-    <a href="field.php" class="btn-back">← 畑一覧に戻る</a>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <form method="post" action="plot_clear.php"
+            onsubmit="return confirm('今年の栽培記録をすべてリセットしますか？')">
+        <input type="hidden" name="field_id" value="<?= $field_id ?>">
+        <input type="hidden" name="target"   value="season">
+        <button class="btn-clear" type="submit">今年をリセット</button>
+      </form>
+      <form method="post" action="plot_clear.php"
+            onsubmit="return confirm('この畑の全栽培記録を削除しますか？\nこの操作は取り消せません。')">
+        <input type="hidden" name="field_id" value="<?= $field_id ?>">
+        <input type="hidden" name="target"   value="all">
+        <button class="btn-clear" type="submit">全記録を削除</button>
+      </form>
+      <a href="field.php" class="btn-back">← 畑一覧</a>
+    </div>
   </div>
 
   <!-- グリッド -->

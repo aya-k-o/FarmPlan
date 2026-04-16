@@ -179,46 +179,78 @@ $status_labels = [
         <a href="field.php" class="btn-link">畑マップから記録を追加する</a>
       </div>
     <?php else: ?>
-      <p class="record-count"><?= count($records) ?>件の記録</p>
-      <div class="history-table-wrap">
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>野菜</th>
-              <th>科</th>
-              <th>畑・区画</th>
-              <th>植え付け日</th>
-              <th>収穫日</th>
-              <th>重量</th>
-              <th>ステータス</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($records as $rec): ?>
+      <form method="post" action="history_delete.php" onsubmit="return confirmDelete()">
+        <!-- 絞り込み条件を引き継ぐ -->
+        <input type="hidden" name="year"   value="<?= htmlspecialchars($filter_year,   ENT_QUOTES, 'UTF-8') ?>">
+        <input type="hidden" name="status" value="<?= htmlspecialchars($filter_status, ENT_QUOTES, 'UTF-8') ?>">
+        <input type="hidden" name="family" value="<?= htmlspecialchars($filter_family, ENT_QUOTES, 'UTF-8') ?>">
+
+        <div class="bulk-action-bar">
+          <p class="record-count"><?= count($records) ?>件の記録</p>
+          <button class="btn-bulk-delete" type="submit">選択したものを削除</button>
+        </div>
+
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
               <tr>
-                <td class="td-veg"><?= htmlspecialchars($rec['veg_name'], ENT_QUOTES, 'UTF-8') ?></td>
-                <td>
-                  <span class="family-tag family-<?= familyClass($rec['family']) ?>">
-                    <?= htmlspecialchars($rec['family'], ENT_QUOTES, 'UTF-8') ?>
-                  </span>
-                </td>
-                <td class="td-plot">
-                  <?= htmlspecialchars($rec['field_name'], ENT_QUOTES, 'UTF-8') ?>
-                  <span class="td-plot-pos"><?= $rec['row_num'] ?>行<?= $rec['col_num'] ?>列</span>
-                </td>
-                <td><?= $rec['planted_at'] ?? '―' ?></td>
-                <td><?= $rec['harvest_date'] ?? '―' ?></td>
-                <td><?= $rec['weight'] ? $rec['weight'] . 'kg' : '―' ?></td>
-                <td>
-                  <span class="status-badge status-<?= htmlspecialchars($rec['status'], ENT_QUOTES, 'UTF-8') ?>">
-                    <?= htmlspecialchars($status_labels[$rec['status']] ?? $rec['status'], ENT_QUOTES, 'UTF-8') ?>
-                  </span>
-                </td>
+                <th><input type="checkbox" id="checkAll" title="すべて選択"></th>
+                <th>野菜</th>
+                <th>科</th>
+                <th>畑・区画</th>
+                <th>植え付け日</th>
+                <th>収穫日</th>
+                <th>重量</th>
+                <th>ステータス</th>
               </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              <?php foreach ($records as $rec): ?>
+                <tr>
+                  <td><input type="checkbox" name="season_ids[]" value="<?= $rec['season_id'] ?>"></td>
+                  <td class="td-veg"><?= htmlspecialchars($rec['veg_name'], ENT_QUOTES, 'UTF-8') ?></td>
+                  <td>
+                    <span class="family-tag family-<?= familyClass($rec['family']) ?>">
+                      <?= htmlspecialchars($rec['family'], ENT_QUOTES, 'UTF-8') ?>
+                    </span>
+                  </td>
+                  <td class="td-plot">
+                    <?= htmlspecialchars($rec['field_name'], ENT_QUOTES, 'UTF-8') ?>
+                    <span class="td-plot-pos"><?= $rec['row_num'] ?>行<?= $rec['col_num'] ?>列</span>
+                  </td>
+                  <td><?= $rec['planted_at'] ?? '―' ?></td>
+                  <td><?= $rec['harvest_date'] ?? '―' ?></td>
+                  <td><?= $rec['weight'] ? $rec['weight'] . 'kg' : '―' ?></td>
+                  <td>
+                    <span class="status-badge status-<?= htmlspecialchars($rec['status'], ENT_QUOTES, 'UTF-8') ?>">
+                      <?= htmlspecialchars($status_labels[$rec['status']] ?? $rec['status'], ENT_QUOTES, 'UTF-8') ?>
+                    </span>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </form>
+
+      <script>
+      // 全選択チェックボックス
+      document.getElementById('checkAll').addEventListener('change', function() {
+        document.querySelectorAll('input[name="season_ids[]"]').forEach(cb => {
+          cb.checked = this.checked;
+        });
+      });
+
+      // 削除前確認
+      function confirmDelete() {
+        const checked = document.querySelectorAll('input[name="season_ids[]"]:checked').length;
+        if (checked === 0) {
+          alert('削除する記録を選択してください。');
+          return false;
+        }
+        return confirm(checked + '件の記録を削除しますか？');
+      }
+      </script>
     <?php endif; ?>
   </div>
 

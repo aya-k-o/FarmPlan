@@ -404,6 +404,37 @@ nav a.active {
 
 .btn-create:hover { background: var(--leaf-dark); }
 
+.btn-delete-field {
+  margin-top: 8px;
+  width: 100%;
+  padding: 6px;
+  background: white;
+  color: #c0392b;
+  border: 1px solid #e08080;
+  border-radius: 6px;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-delete-field:hover { background: #fff5f5; }
+
+.btn-clear {
+  padding: 7px 14px;
+  background: white;
+  color: var(--warning);
+  border: 1px solid var(--warning);
+  border-radius: 6px;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-clear:hover { background: #fff8f0; }
+
 .btn-back {
   font-size: 13px;
   color: var(--text-light);
@@ -621,6 +652,28 @@ nav a.active {
 }
 
 .btn-filter:hover { background: var(--leaf-dark); }
+
+.bulk-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.btn-bulk-delete {
+  padding: 8px 16px;
+  background: white;
+  color: #c0392b;
+  border: 1px solid #e08080;
+  border-radius: 6px;
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-bulk-delete:hover { background: #fff5f5; }
 
 .record-count {
   font-size: 13px;
