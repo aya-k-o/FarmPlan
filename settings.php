@@ -87,7 +87,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $success = 'パスワードを変更しました。';
         }
     }
+
+    // ---- 野菜を追加 ----
+    if ($_POST['action'] === 'add_vegetable') {
+        $veg_name = trim($_POST['veg_name'] ?? '');
+        $family   = trim($_POST['family']   ?? '');
+        $variety  = trim($_POST['variety']  ?? '');
+
+        if ($veg_name === '') $errors[] = '野菜名を入力してください。';
+        if ($family === '')   $errors[] = '科を選択してください。';
+
+        if (empty($errors)) {
+            $stmt = $pdo->prepare('INSERT INTO vegetables (name, family, variety) VALUES (?, ?, ?)');
+            $stmt->execute([$veg_name, $family, $variety ?: null]);
+            $success = '「' . htmlspecialchars($veg_name, ENT_QUOTES, 'UTF-8') . '」を登録しました。';
+        }
+    }
+
+    // ---- 野菜を削除 ----
+    if ($_POST['action'] === 'delete_vegetable') {
+        $veg_id = (int)($_POST['veg_id'] ?? 0);
+        if ($veg_id) {
+            // 栽培記録で使われていないか確認
+            $stmt = $pdo->prepare('SELECT COUNT(*) FROM plot_seasons WHERE vegetable_id = ?');
+            $stmt->execute([$veg_id]);
+            if ($stmt->fetchColumn() > 0) {
+                $errors[] = 'この野菜は栽培記録で使用中のため削除できません。';
+            } else {
+                $stmt = $pdo->prepare('DELETE FROM vegetables WHERE id = ?');
+                $stmt->execute([$veg_id]);
+                $success = '野菜を削除しました。';
+            }
+        }
+    }
 }
+
+// 科名 → CSSクラス名
+function familyClass(string $family): string {
+    $map = [
+        'ナス科' => 'nasuka',
+        'ウリ科' => 'urka',
+        '根菜'   => 'konka',
+        '葉野菜' => 'hagasai',
+        'イモ類' => 'imoka',
+        'マメ科' => 'mameka',
+    ];
+    return $map[$family] ?? 'empty';
+}
+
+// 野菜一覧を取得
+$stmt = $pdo->prepare('SELECT id, name, family, variety FROM vegetables ORDER BY family, name');
+$stmt->execute();
+$vegetables = $stmt->fetchAll();
+
+$families = ['ナス科', 'ウリ科', '根菜', '葉野菜', 'イモ類', 'マメ科'];
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -221,6 +274,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         <button class="btn-primary" type="submit">パスワードを変更する</button>
       </form>
+    </div>
+  </div>
+
+  <!-- 野菜マスタ管理 -->
+  <div class="section">
+    <h2 class="section-title">野菜の追加・管理</h2>
+
+    <!-- 野菜追加フォーム -->
+    <div class="form-card" style="margin-bottom:20px;">
+      <form method="post" action="settings.php">
+        <input type="hidden" name="action" value="add_vegetable">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="veg_name">野菜名</label>
+            <input class="form-input" type="text" id="veg_name" name="veg_name"
+                   placeholder="例：スイカ">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="family">科</label>
+            <select class="form-input" id="family" name="family">
+              <option value="">-- 選択 --</option>
+              <?php foreach ($families as $f): ?>
+                <option value="<?= htmlspecialchars($f, ENT_QUOTES, 'UTF-8') ?>">
+                  <?= htmlspecialchars($f, ENT_QUOTES, 'UTF-8') ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="variety">品種（任意）</label>
+            <input class="form-input" type="text" id="variety" name="variety"
+                   placeholder="例：大玉・小玉">
+          </div>
+        </div>
+        <button class="btn-primary" type="submit" style="margin-top:4px;">追加する</button>
+      </form>
+    </div>
+
+    <!-- 野菜一覧 -->
+    <div class="history-table-wrap">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>野菜名</th>
+            <th>科</th>
+            <th>品種</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($vegetables as $v): ?>
+            <tr>
+              <td class="td-veg"><?= htmlspecialchars($v['name'], ENT_QUOTES, 'UTF-8') ?></td>
+              <td>
+                <span class="family-tag family-<?= familyClass($v['family']) ?>">
+                  <?= htmlspecialchars($v['family'], ENT_QUOTES, 'UTF-8') ?>
+                </span>
+              </td>
+              <td><?= htmlspecialchars($v['variety'] ?? '―', ENT_QUOTES, 'UTF-8') ?></td>
+              <td>
+                <form method="post" action="settings.php"
+                      onsubmit="return confirm('「<?= htmlspecialchars($v['name'], ENT_QUOTES, 'UTF-8') ?>」を削除しますか？')">
+                  <input type="hidden" name="action" value="delete_vegetable">
+                  <input type="hidden" name="veg_id" value="<?= $v['id'] ?>">
+                  <button class="btn-delete-field" type="submit">削除</button>
+                </form>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
     </div>
   </div>
 
