@@ -72,6 +72,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // ---- 編集（株数・植え付け日の更新） ----
+    if ($action === 'update') {
+        $season_id  = (int)($_POST['season_id'] ?? 0);
+        $quantity   = max(1, min(99, (int)($_POST['quantity'] ?? 1)));
+        $planted_at = $_POST['planted_at'] ?? '';
+
+        if ($season_id && $planted_at) {
+            $stmt = $pdo->prepare('
+                UPDATE plot_seasons
+                SET quantity = ?, planted_at = ?
+                WHERE id = ?
+            ');
+            $stmt->execute([$quantity, $planted_at, $season_id]);
+        }
+    }
+
     // ---- 収穫済み ----
     if ($action === 'harvest') {
         $season_id = (int)($_POST['season_id'] ?? 0);
@@ -88,6 +104,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 INSERT INTO harvests (plot_season_id, harvested_at)
                 VALUES (?, CURDATE())
             ');
+            $stmt->execute([$season_id]);
+        }
+    }
+
+    // ---- 取り消し（記録を削除して空き区画に戻す） ----
+    if ($action === 'cancel') {
+        $season_id = (int)($_POST['season_id'] ?? 0);
+        if ($season_id) {
+            $stmt = $pdo->prepare('DELETE FROM plot_seasons WHERE id = ?');
             $stmt->execute([$season_id]);
         }
     }

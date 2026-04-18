@@ -100,7 +100,7 @@ if ($field_id === null) {
     }
 
     // 野菜リスト
-    $stmt = $pdo->prepare('SELECT id, name, family FROM vegetables ORDER BY family, name');
+    $stmt = $pdo->prepare('SELECT id, name, family, variety FROM vegetables ORDER BY family, name');
     $stmt->execute();
     $vegetables = $stmt->fetchAll();
 
@@ -287,7 +287,12 @@ if ($field_id === null) {
                     $cur_family = $v['family'];
                 endif;
             ?>
-              <option value="<?= $v['id'] ?>"><?= htmlspecialchars($v['name'], ENT_QUOTES, 'UTF-8') ?></option>
+              <option value="<?= $v['id'] ?>">
+                <?= htmlspecialchars($v['name'], ENT_QUOTES, 'UTF-8') ?>
+                <?php if (!empty($v['variety'])): ?>
+                  （<?= htmlspecialchars($v['variety'], ENT_QUOTES, 'UTF-8') ?>）
+                <?php endif; ?>
+              </option>
             <?php endforeach; ?>
             <?php if ($cur_family !== '') echo '</optgroup>'; ?>
           </select>

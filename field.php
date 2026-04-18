@@ -80,7 +80,7 @@ if ($field_id === null) {
     }
 
     // 野菜リスト（モーダルのセレクトボックス用）
-    $stmt = $pdo->prepare('SELECT id, name, family FROM vegetables ORDER BY family, name');
+    $stmt = $pdo->prepare('SELECT id, name, family, variety FROM vegetables ORDER BY family, name');
     $stmt->execute();
     $vegetables = $stmt->fetchAll();
 
@@ -259,7 +259,12 @@ if ($field_id === null) {
                     $current_family = $v['family'];
                 endif;
             ?>
-              <option value="<?= $v['id'] ?>"><?= htmlspecialchars($v['name'], ENT_QUOTES, 'UTF-8') ?></option>
+              <option value="<?= $v['id'] ?>">
+                <?= htmlspecialchars($v['name'], ENT_QUOTES, 'UTF-8') ?>
+                <?php if (!empty($v['variety'])): ?>
+                  （<?= htmlspecialchars($v['variety'], ENT_QUOTES, 'UTF-8') ?>）
+                <?php endif; ?>
+              </option>
             <?php endforeach; ?>
             <?php if ($current_family !== '') echo '</optgroup>'; ?>
           </select>
@@ -282,20 +287,43 @@ if ($field_id === null) {
     <!-- 栽培中区画：情報 + 操作ボタン -->
     <div id="modalOccupied" style="display:none;">
       <div class="modal-info-row"><span class="modal-info-label">科</span><span id="modalFamily"></span></div>
-      <div class="modal-info-row"><span class="modal-info-label">株数</span><span id="modalQuantity"></span></div>
-      <div class="modal-info-row"><span class="modal-info-label">植え付け日</span><span id="modalPlantedAt"></span></div>
 
       <div id="modalRotationWarning" class="alert alert-error" style="display:none; margin:12px 0;">
         ▲ 連作障害の恐れあり — 過去3年以内に同じ科を栽培しています
       </div>
 
-      <form method="post" action="plot_action.php" style="margin-top:16px;">
+      <!-- 編集フォーム -->
+      <form method="post" action="plot_action.php" style="margin-top:12px;">
+        <input type="hidden" name="action"    value="update">
         <input type="hidden" name="field_id"  value="<?= $field_id ?>">
         <input type="hidden" name="season_id" id="inputSeasonId">
+        <div class="form-group">
+          <label class="form-label">株数</label>
+          <input class="form-input" type="number" name="quantity" id="editQuantity" min="1" max="99">
+        </div>
+        <div class="form-group">
+          <label class="form-label">植え付け日</label>
+          <input class="form-input" type="date" name="planted_at" id="editPlantedAt">
+        </div>
+        <button class="btn-primary" type="submit" style="width:100%; margin-bottom:12px;">変更を保存する</button>
+      </form>
+
+      <!-- 収穫・失敗フォーム -->
+      <form method="post" action="plot_action.php">
+        <input type="hidden" name="field_id"  value="<?= $field_id ?>">
+        <input type="hidden" name="season_id" id="inputSeasonId2">
         <div class="btn-row">
           <button class="btn btn-harvest" type="submit" name="action" value="harvest">収穫した</button>
           <button class="btn btn-fail"    type="submit" name="action" value="fail">失敗した</button>
         </div>
+      </form>
+
+      <!-- 取り消しフォーム -->
+      <form method="post" action="plot_action.php" style="margin-top:8px;"
+            onsubmit="return confirm('この区画の植え付け記録を取り消しますか？')">
+        <input type="hidden" name="field_id"  value="<?= $field_id ?>">
+        <input type="hidden" name="season_id" id="inputSeasonId3">
+        <button class="btn btn-cancel" type="submit" name="action" value="cancel" style="width:100%;">植え付けを取り消す</button>
       </form>
     </div>
   </div><!-- /modal -->
@@ -332,9 +360,11 @@ function openModal(el) {
     // 栽培中 or 計画済み
     document.getElementById('modalVegName').textContent = vegName;
     document.getElementById('modalFamily').textContent = family;
-    document.getElementById('modalQuantity').textContent = quantity + '株';
-    document.getElementById('modalPlantedAt').textContent = plantedAt || '未登録';
-    document.getElementById('inputSeasonId').value = seasonId;
+    document.getElementById('editQuantity').value   = quantity;
+    document.getElementById('editPlantedAt').value  = plantedAt;
+    document.getElementById('inputSeasonId').value  = seasonId;
+    document.getElementById('inputSeasonId2').value = seasonId;
+    document.getElementById('inputSeasonId3').value = seasonId;
     document.getElementById('modalEmpty').style.display = 'none';
     document.getElementById('modalOccupied').style.display = 'block';
 
