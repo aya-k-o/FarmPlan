@@ -55,6 +55,7 @@ if ($field_id === null) {
             p.col_num,
             ps.id       AS season_id,
             ps.status,
+            ps.quantity,
             v.id        AS vegetable_id,
             v.name      AS veg_name,
             v.family
@@ -212,6 +213,7 @@ if ($field_id === null) {
             $season_id   = $plot['season_id']   ?? '';
             $plot_id     = $plot['plot_id']      ?? '';
             $family      = $plot['family']       ?? '';
+            $quantity    = $plot['quantity']     ?? 1;
 
             // 連作チェック
             $has_warning = false;
@@ -225,6 +227,7 @@ if ($field_id === null) {
             data-season-id="<?= htmlspecialchars($season_id, ENT_QUOTES, 'UTF-8') ?>"
             data-veg-name="<?= htmlspecialchars($veg_name, ENT_QUOTES, 'UTF-8') ?>"
             data-family="<?= htmlspecialchars($family, ENT_QUOTES, 'UTF-8') ?>"
+            data-quantity="<?= (int)$quantity ?>"
             data-row="<?= $r ?>"
             data-col="<?= $c ?>"
             data-warning="<?= $has_warning ? '1' : '0' ?>"
@@ -289,6 +292,10 @@ if ($field_id === null) {
             <?php if ($cur_family !== '') echo '</optgroup>'; ?>
           </select>
         </div>
+        <div class="form-group">
+          <label class="form-label">株数</label>
+          <input class="form-input" type="number" name="quantity" value="1" min="1" max="99">
+        </div>
         <button class="btn-primary" type="submit">この区画に配置する</button>
       </form>
     </div>
@@ -296,6 +303,7 @@ if ($field_id === null) {
     <!-- 計画済み：削除ボタン -->
     <div id="modalPlanned" style="display:none;">
       <div class="modal-info-row"><span class="modal-info-label">科</span><span id="modalFamily"></span></div>
+      <div class="modal-info-row"><span class="modal-info-label">株数</span><span id="modalQuantity"></span></div>
       <form method="post" action="plan_action.php" style="margin-top:16px;">
         <input type="hidden" name="action"    value="remove">
         <input type="hidden" name="field_id"  value="<?= $field_id ?>">
@@ -315,6 +323,7 @@ function openPlanModal(el) {
   const seasonId = el.dataset.seasonId;
   const vegName  = el.dataset.vegName;
   const family   = el.dataset.family;
+  const quantity = el.dataset.quantity;
   const row      = el.dataset.row;
   const col      = el.dataset.col;
   const warning  = el.dataset.warning === '1';
@@ -332,6 +341,7 @@ function openPlanModal(el) {
   } else {
     document.getElementById('modalVegName').textContent = vegName;
     document.getElementById('modalFamily').textContent = family;
+    document.getElementById('modalQuantity').textContent = quantity + '株';
     document.getElementById('inputSeasonId').value = seasonId;
     document.getElementById('modalEmpty').style.display = 'none';
     document.getElementById('modalPlanned').style.display = 'block';

@@ -56,6 +56,7 @@ if ($field_id === null) {
             ps.id        AS season_id,
             ps.status,
             ps.planted_at,
+            ps.quantity,
             v.id         AS vegetable_id,
             v.name       AS veg_name,
             v.family
@@ -194,6 +195,7 @@ if ($field_id === null) {
             $season_id    = $plot['season_id'] ?? '';
             $status       = $plot['status'] ?? '';
             $planted_at   = $plot['planted_at'] ?? '';
+            $quantity     = $plot['quantity'] ?? 1;
             $plot_id      = $plot['plot_id'] ?? '';
           ?>
           <div
@@ -204,6 +206,7 @@ if ($field_id === null) {
             data-family="<?= htmlspecialchars($plot['family'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
             data-status="<?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8') ?>"
             data-planted-at="<?= htmlspecialchars($planted_at, ENT_QUOTES, 'UTF-8') ?>"
+            data-quantity="<?= (int)$quantity ?>"
             data-row="<?= $r ?>"
             data-col="<?= $c ?>"
             onclick="openModal(this)"
@@ -263,6 +266,11 @@ if ($field_id === null) {
         </div>
 
         <div class="form-group">
+          <label class="form-label">株数</label>
+          <input class="form-input" type="number" name="quantity" value="1" min="1" max="99">
+        </div>
+
+        <div class="form-group">
           <label class="form-label">植え付け日</label>
           <input class="form-input" type="date" name="planted_at" value="<?= date('Y-m-d') ?>">
         </div>
@@ -274,6 +282,7 @@ if ($field_id === null) {
     <!-- 栽培中区画：情報 + 操作ボタン -->
     <div id="modalOccupied" style="display:none;">
       <div class="modal-info-row"><span class="modal-info-label">科</span><span id="modalFamily"></span></div>
+      <div class="modal-info-row"><span class="modal-info-label">株数</span><span id="modalQuantity"></span></div>
       <div class="modal-info-row"><span class="modal-info-label">植え付け日</span><span id="modalPlantedAt"></span></div>
 
       <div id="modalRotationWarning" class="alert alert-error" style="display:none; margin:12px 0;">
@@ -302,6 +311,7 @@ function openModal(el) {
   const family    = el.dataset.family;
   const status    = el.dataset.status;
   const plantedAt = el.dataset.plantedAt;
+  const quantity  = el.dataset.quantity;
   const row       = el.dataset.row;
   const col       = el.dataset.col;
 
@@ -322,6 +332,7 @@ function openModal(el) {
     // 栽培中 or 計画済み
     document.getElementById('modalVegName').textContent = vegName;
     document.getElementById('modalFamily').textContent = family;
+    document.getElementById('modalQuantity').textContent = quantity + '株';
     document.getElementById('modalPlantedAt').textContent = plantedAt || '未登録';
     document.getElementById('inputSeasonId').value = seasonId;
     document.getElementById('modalEmpty').style.display = 'none';

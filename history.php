@@ -27,6 +27,7 @@ $sql = '
         ps.year,
         ps.planted_at,
         ps.harvested_at,
+        ps.quantity,
         ps.memo,
         v.name         AS veg_name,
         v.family,
@@ -197,6 +198,7 @@ $status_labels = [
                 <th><input type="checkbox" id="checkAll" title="すべて選択"></th>
                 <th>野菜</th>
                 <th>科</th>
+                <th>株数</th>
                 <th>畑・区画</th>
                 <th>植え付け日</th>
                 <th>収穫日</th>
@@ -214,6 +216,7 @@ $status_labels = [
                       <?= htmlspecialchars($rec['family'], ENT_QUOTES, 'UTF-8') ?>
                     </span>
                   </td>
+                  <td><?= (int)$rec['quantity'] ?>株</td>
                   <td class="td-plot">
                     <?= htmlspecialchars($rec['field_name'], ENT_QUOTES, 'UTF-8') ?>
                     <span class="td-plot-pos"><?= $rec['row_num'] ?>行<?= $rec['col_num'] ?>列</span>

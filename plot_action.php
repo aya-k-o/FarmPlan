@@ -61,13 +61,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $plot_id      = (int)($_POST['plot_id']      ?? 0);
         $vegetable_id = (int)($_POST['vegetable_id'] ?? 0);
         $planted_at   = $_POST['planted_at'] ?? date('Y-m-d');
+        $quantity     = max(1, min(99, (int)($_POST['quantity'] ?? 1)));
 
         if ($plot_id && $vegetable_id) {
             $stmt = $pdo->prepare('
-                INSERT INTO plot_seasons (plot_id, vegetable_id, year, mode, status, planted_at)
-                VALUES (?, ?, YEAR(NOW()), "actual", "growing", ?)
+                INSERT INTO plot_seasons (plot_id, vegetable_id, quantity, year, mode, status, planted_at)
+                VALUES (?, ?, ?, YEAR(NOW()), "actual", "growing", ?)
             ');
-            $stmt->execute([$plot_id, $vegetable_id, $planted_at]);
+            $stmt->execute([$plot_id, $vegetable_id, $quantity, $planted_at]);
         }
     }
 
