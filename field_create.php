@@ -26,6 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($grid_rows < 1 || $grid_rows > 20) $errors[] = '行数は1〜20で入力してください。';
     if ($grid_cols < 1 || $grid_cols > 20) $errors[] = '列数は1〜20で入力してください。';
 
+    // 同名の畑が存在しないか確認
+    if (empty($errors)) {
+        $stmt = $pdo->prepare('SELECT id FROM fields WHERE user_id = ? AND name = ?');
+        $stmt->execute([$user_id, $name]);
+        if ($stmt->fetch()) {
+            $errors[] = '「' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '」という名前の畑はすでに登録されています。';
+        }
+    }
+
     if (empty($errors)) {
         // fieldsテーブルに畑を登録
         $stmt = $pdo->prepare('INSERT INTO fields (user_id, name, grid_rows, grid_cols) VALUES (?, ?, ?, ?)');
