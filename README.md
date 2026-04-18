@@ -4,6 +4,16 @@
 
 ---
 
+## デモ
+
+🌱 **https://ayakomochi.xsrv.jp/farmplan/**
+
+| ユーザー名 | メール | パスワード |
+|---|---|---|
+| demo | demo@example.com | demo1234 |
+
+---
+
 ## ドキュメント
 
 - [要件定義書](docs/requirements.md)
