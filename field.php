@@ -11,22 +11,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require 'db_connect.php';
+require 'functions.php';
 
 $user_id  = $_SESSION['user_id'];
 $field_id = isset($_GET['id']) ? (int)$_GET['id'] : null;
-
-// 科名 → CSSクラス名の変換
-function familyClass(string $family): string {
-    $map = [
-        'ナス科' => 'nasuka',
-        'ウリ科' => 'urka',
-        '根菜'   => 'konka',
-        '葉野菜' => 'hagasai',
-        'イモ類' => 'imoka',
-        'マメ科' => 'mameka',
-    ];
-    return $map[$family] ?? 'empty';
-}
 
 // ---- 畑一覧モード（?idなし） ----
 if ($field_id === null) {

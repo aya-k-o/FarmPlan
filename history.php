@@ -11,6 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require 'db_connect.php';
+require 'functions.php';
 
 $user_id = $_SESSION['user_id'];
 
@@ -261,18 +262,3 @@ $status_labels = [
 
 </body>
 </html>
-
-<?php
-// familyClass関数（field.phpと同じ）
-function familyClass(string $family): string {
-    $map = [
-        'ナス科' => 'nasuka',
-        'ウリ科' => 'urka',
-        '根菜'   => 'konka',
-        '葉野菜' => 'hagasai',
-        'イモ類' => 'imoka',
-        'マメ科' => 'mameka',
-    ];
-    return $map[$family] ?? 'empty';
-}
-?>
