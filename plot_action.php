@@ -130,6 +130,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // ---- メモ更新（AJAX用・JSONで返す） ----
+    if ($action === 'update_memo') {
+        $season_id = (int)($_POST['season_id'] ?? 0);
+        $memo      = trim($_POST['memo'] ?? '');
+
+        if ($season_id) {
+            // このseason_idが自分のデータか確認
+            $stmt = $pdo->prepare('
+                SELECT ps.id FROM plot_seasons ps
+                JOIN plots p  ON p.id = ps.plot_id
+                JOIN fields f ON f.id = p.field_id
+                WHERE ps.id = ? AND f.user_id = ?
+            ');
+            $stmt->execute([$season_id, $user_id]);
+            if ($stmt->fetch()) {
+                $stmt = $pdo->prepare('UPDATE plot_seasons SET memo = ? WHERE id = ?');
+                $stmt->execute([$memo ?: null, $season_id]);
+                header('Content-Type: application/json');
+                echo json_encode(['ok' => true]);
+                exit;
+            }
+        }
+        header('Content-Type: application/json');
+        echo json_encode(['ok' => false]);
+        exit;
+    }
+
     header('Location: field.php?id=' . $field_id);
     exit;
 }

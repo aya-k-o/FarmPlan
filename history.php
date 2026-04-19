@@ -221,7 +221,15 @@ $status_labels = [
                   </td>
                   <td><?= $rec['planted_at'] ?? '―' ?></td>
                   <td><?= $rec['harvested_at'] ?? '―' ?></td>
-                  <td class="td-memo"><?= htmlspecialchars($rec['memo'] ?? '', ENT_QUOTES, 'UTF-8') ?: '―' ?></td>
+                  <td class="td-memo">
+                    <input
+                      class="memo-input"
+                      type="text"
+                      data-season-id="<?= $rec['season_id'] ?>"
+                      value="<?= htmlspecialchars($rec['memo'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                      placeholder="メモを入力..."
+                    >
+                  </td>
                   <td>
                     <span class="status-badge status-<?= htmlspecialchars($rec['status'], ENT_QUOTES, 'UTF-8') ?>">
                       <?= htmlspecialchars($status_labels[$rec['status']] ?? $rec['status'], ENT_QUOTES, 'UTF-8') ?>
@@ -251,6 +259,35 @@ $status_labels = [
         }
         return confirm(checked + '件の記録を削除しますか？');
       }
+
+      // メモ：フォーカスを外したとき自動保存
+      document.querySelectorAll('.memo-input').forEach(input => {
+        const original = input.value;
+        input.dataset.original = original;
+
+        input.addEventListener('blur', function() {
+          if (this.value === this.dataset.original) return; // 変更なし
+          const seasonId = this.dataset.seasonId;
+          const memo     = this.value;
+          const el       = this;
+
+          const fd = new FormData();
+          fd.append('action',    'update_memo');
+          fd.append('season_id', seasonId);
+          fd.append('memo',      memo);
+
+          fetch('plot_action.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(data => {
+              if (data.ok) {
+                el.dataset.original = memo;
+                el.style.borderColor = '#8ab870';
+                setTimeout(() => { el.style.borderColor = ''; }, 1000);
+              }
+            })
+            .catch(() => {});
+        });
+      });
       </script>
     <?php endif; ?>
   </div>
