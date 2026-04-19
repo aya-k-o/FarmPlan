@@ -112,15 +112,26 @@ harvests        収穫記録
 
 ---
 
-## 環境構築
+## ローカル環境構築
 
 ```bash
 git clone https://github.com/aya-k-o/farmplan.git
 cd farmplan
 
-# .envを作成
+# .envを作成（内容は下記を参考に設定）
 cp .env.example .env
+```
 
+`.env` の内容：
+
+```
+DB_NAME=farmplan
+DB_USER=farmplan_user
+DB_PASS=your_password
+DB_ROOT_PASS=your_root_password
+```
+
+```bash
 # Dockerを起動
 docker-compose up -d
 ```
@@ -128,6 +139,8 @@ docker-compose up -d
 起動後：
 - アプリ：http://localhost:8080
 - phpMyAdmin：http://localhost:8081
+
+> ※ デモ環境は **https://ayakomochi.xsrv.jp/farmplan/** で公開中です。
 
 ---
 
