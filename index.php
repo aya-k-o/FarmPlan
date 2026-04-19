@@ -55,20 +55,15 @@ $stmt = $pdo->prepare('
 $stmt->execute([$user_id]);
 $harvest_count = $stmt->fetch()['cnt'];
 
-// ---- 直近の栽培記録を取得（5件）----
+// ---- タスク一覧を取得（期限あり優先・期限順）----
 $stmt = $pdo->prepare('
-    SELECT v.name AS veg_name, v.family, ps.status, ps.planted_at, f.name AS field_name
-    FROM plot_seasons ps
-    JOIN plots p ON p.id = ps.plot_id
-    JOIN fields f ON f.id = p.field_id
-    JOIN vegetables v ON v.id = ps.vegetable_id
-    WHERE f.user_id = ?
-      AND ps.mode = "actual"
-    ORDER BY ps.created_at DESC
-    LIMIT 5
+    SELECT id, title, due_date
+    FROM tasks
+    WHERE user_id = ?
+    ORDER BY ISNULL(due_date), due_date ASC, created_at ASC
 ');
 $stmt->execute([$user_id]);
-$recent_records = $stmt->fetchAll();
+$tasks = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -132,38 +127,52 @@ $recent_records = $stmt->fetchAll();
     </div>
   </div>
 
-  <!-- 直近の栽培記録 -->
+  <!-- タスク -->
   <div class="section">
-    <h2 class="section-title">直近の栽培記録</h2>
+    <h2 class="section-title">農作業タスク</h2>
 
-    <?php if (empty($recent_records)): ?>
+    <!-- タスク追加フォーム -->
+    <form method="post" action="task_action.php" class="task-add-form">
+      <input type="hidden" name="action" value="add">
+      <input
+        class="form-input task-add-input"
+        type="text"
+        name="title"
+        placeholder="タスクを入力（例：防虫網設置、土寄せ）"
+        required
+      >
+      <input
+        class="form-input task-add-date"
+        type="date"
+        name="due_date"
+      >
+      <button class="btn-primary task-add-btn" type="submit">追加</button>
+    </form>
+
+    <?php if (empty($tasks)): ?>
       <div class="empty-state">
-        <p>まだ栽培記録がありません。</p>
-        <a href="field.php" class="btn-link">畑マップから始める</a>
+        <p>タスクはありません。</p>
       </div>
     <?php else: ?>
-      <div class="record-list">
-        <?php foreach ($recent_records as $rec): ?>
-          <div class="record-item">
-            <div class="record-veg"><?= htmlspecialchars($rec['veg_name'], ENT_QUOTES, 'UTF-8') ?></div>
-            <div class="record-meta">
-              <span class="record-family"><?= htmlspecialchars($rec['family'], ENT_QUOTES, 'UTF-8') ?></span>
-              <span class="record-field"><?= htmlspecialchars($rec['field_name'], ENT_QUOTES, 'UTF-8') ?></span>
+      <ul class="task-list">
+        <?php foreach ($tasks as $task):
+          $overdue = $task['due_date'] && $task['due_date'] < date('Y-m-d');
+        ?>
+          <li class="task-item <?= $overdue ? 'task-overdue' : '' ?>">
+            <div class="task-info">
+              <span class="task-title"><?= htmlspecialchars($task['title'], ENT_QUOTES, 'UTF-8') ?></span>
+              <?php if ($task['due_date']): ?>
+                <span class="task-due"><?= htmlspecialchars($task['due_date'], ENT_QUOTES, 'UTF-8') ?>まで</span>
+              <?php endif; ?>
             </div>
-            <div class="status-badge status-<?= htmlspecialchars($rec['status'], ENT_QUOTES, 'UTF-8') ?>">
-              <?php
-              $status_labels = [
-                  'planned'   => '計画済み',
-                  'growing'   => '栽培中',
-                  'harvested' => '収穫済み',
-                  'failed'    => '失敗',
-              ];
-              echo htmlspecialchars($status_labels[$rec['status']] ?? $rec['status'], ENT_QUOTES, 'UTF-8');
-              ?>
-            </div>
-          </div>
+            <form method="post" action="task_action.php">
+              <input type="hidden" name="action"  value="complete">
+              <input type="hidden" name="task_id" value="<?= $task['id'] ?>">
+              <button class="btn-task-complete" type="submit">完了</button>
+            </form>
+          </li>
         <?php endforeach; ?>
-      </div>
+      </ul>
     <?php endif; ?>
   </div>
 
