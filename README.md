@@ -8,9 +8,9 @@
 
 🌱 **https://ayakomochi.xsrv.jp/farmplan/**
 
-| ユーザー名 | ユーザーID | パスワード |
+| ユーザー名 | ログインID | パスワード |
 |---|---|---|
-| demo | demo@example.com | demo1234 |
+| demo | demo | demo1234 |
 
 ---
 
