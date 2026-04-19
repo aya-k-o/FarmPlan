@@ -26,11 +26,11 @@ if ($action === 'add') {
     }
 }
 
-// ---- タスクを完了（削除） ----
+// ---- タスクを完了（done=1に更新・日時を記録） ----
 if ($action === 'complete') {
     $task_id = (int)($_POST['task_id'] ?? 0);
     if ($task_id) {
-        $stmt = $pdo->prepare('DELETE FROM tasks WHERE id = ? AND user_id = ?');
+        $stmt = $pdo->prepare('UPDATE tasks SET done = 1, done_at = NOW() WHERE id = ? AND user_id = ?');
         $stmt->execute([$task_id, $user_id]);
     }
 }

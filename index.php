@@ -55,15 +55,29 @@ $stmt = $pdo->prepare('
 $stmt->execute([$user_id]);
 $harvest_count = $stmt->fetch()['cnt'];
 
-// ---- タスク一覧を取得（期限あり優先・期限順）----
+// ---- 未完了タスクを取得（期限あり優先・期限順）----
 $stmt = $pdo->prepare('
     SELECT id, title, due_date
     FROM tasks
-    WHERE user_id = ?
+    WHERE user_id = ? AND done = 0
     ORDER BY ISNULL(due_date), due_date ASC, created_at ASC
 ');
 $stmt->execute([$user_id]);
 $tasks = $stmt->fetchAll();
+
+// ---- 昨年の今頃（±14日）の完了タスクを取得 ----
+$stmt = $pdo->prepare('
+    SELECT title, DATE_FORMAT(done_at, "%m/%d") AS done_date
+    FROM tasks
+    WHERE user_id = ?
+      AND done = 1
+      AND done_at BETWEEN
+        DATE_SUB(DATE_SUB(NOW(), INTERVAL 1 YEAR), INTERVAL 14 DAY) AND
+        DATE_ADD(DATE_SUB(NOW(), INTERVAL 1 YEAR), INTERVAL 14 DAY)
+    ORDER BY done_at ASC
+');
+$stmt->execute([$user_id]);
+$last_year_tasks = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -175,6 +189,24 @@ $tasks = $stmt->fetchAll();
       </ul>
     <?php endif; ?>
   </div>
+
+  <!-- 昨年の今頃のタスク -->
+  <?php if (!empty($last_year_tasks)): ?>
+  <div class="section">
+    <h2 class="section-title">昨年の今頃の作業</h2>
+    <p class="page-subtitle" style="margin-bottom:12px;">昨年の同じ時期（±2週間）に完了したタスクです</p>
+    <ul class="task-list">
+      <?php foreach ($last_year_tasks as $task): ?>
+        <li class="task-item task-last-year">
+          <div class="task-info">
+            <span class="task-title"><?= htmlspecialchars($task['title'], ENT_QUOTES, 'UTF-8') ?></span>
+            <span class="task-due">昨年 <?= htmlspecialchars($task['done_date'], ENT_QUOTES, 'UTF-8') ?> に完了</span>
+          </div>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  </div>
+  <?php endif; ?>
 
 </main>
 

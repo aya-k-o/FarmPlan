@@ -377,6 +377,12 @@ nav a.active {
   background: var(--leaf-light);
 }
 
+.task-item.task-last-year {
+  background: var(--parchment);
+  border-color: transparent;
+  opacity: 0.8;
+}
+
 /* ===== 栽培記録リスト ===== */
 .record-list {
   display: flex;
