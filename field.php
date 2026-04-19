@@ -45,6 +45,7 @@ if ($field_id === null) {
             ps.status,
             ps.planted_at,
             ps.quantity,
+            ps.memo,
             v.id         AS vegetable_id,
             v.name       AS veg_name,
             v.family
@@ -184,6 +185,7 @@ if ($field_id === null) {
             $status       = $plot['status'] ?? '';
             $planted_at   = $plot['planted_at'] ?? '';
             $quantity     = $plot['quantity'] ?? 1;
+            $memo         = $plot['memo'] ?? '';
             $plot_id      = $plot['plot_id'] ?? '';
           ?>
           <div
@@ -195,6 +197,7 @@ if ($field_id === null) {
             data-status="<?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8') ?>"
             data-planted-at="<?= htmlspecialchars($planted_at, ENT_QUOTES, 'UTF-8') ?>"
             data-quantity="<?= (int)$quantity ?>"
+            data-memo="<?= htmlspecialchars($memo, ENT_QUOTES, 'UTF-8') ?>"
             data-row="<?= $r ?>"
             data-col="<?= $c ?>"
             onclick="openModal(this)"
@@ -268,6 +271,11 @@ if ($field_id === null) {
           <input class="form-input" type="date" name="planted_at" value="<?= date('Y-m-d') ?>">
         </div>
 
+        <div class="form-group">
+          <label class="form-label">メモ（任意）</label>
+          <textarea class="form-input" name="memo" rows="2" placeholder="例：接木苗使用、日当たり良好など"></textarea>
+        </div>
+
         <button class="btn-primary" type="submit">植え付ける</button>
       </form>
     </div>
@@ -292,6 +300,10 @@ if ($field_id === null) {
         <div class="form-group">
           <label class="form-label">植え付け日</label>
           <input class="form-input" type="date" name="planted_at" id="editPlantedAt">
+        </div>
+        <div class="form-group">
+          <label class="form-label">メモ（任意）</label>
+          <textarea class="form-input" name="memo" id="editMemo" rows="2" placeholder="例：接木苗使用、日当たり良好など"></textarea>
         </div>
         <button class="btn-primary" type="submit" style="width:100%; margin-bottom:12px;">変更を保存する</button>
       </form>
@@ -328,6 +340,7 @@ function openModal(el) {
   const status    = el.dataset.status;
   const plantedAt = el.dataset.plantedAt;
   const quantity  = el.dataset.quantity;
+  const memo      = el.dataset.memo;
   const row       = el.dataset.row;
   const col       = el.dataset.col;
 
@@ -350,6 +363,7 @@ function openModal(el) {
     document.getElementById('modalFamily').textContent = family;
     document.getElementById('editQuantity').value   = quantity;
     document.getElementById('editPlantedAt').value  = plantedAt;
+    document.getElementById('editMemo').value       = memo;
     document.getElementById('inputSeasonId').value  = seasonId;
     document.getElementById('inputSeasonId2').value = seasonId;
     document.getElementById('inputSeasonId3').value = seasonId;

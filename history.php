@@ -200,6 +200,7 @@ $status_labels = [
                 <th>畑・区画</th>
                 <th>植え付け日</th>
                 <th>収穫日</th>
+                <th>メモ</th>
                 <th>ステータス</th>
               </tr>
             </thead>
@@ -220,6 +221,7 @@ $status_labels = [
                   </td>
                   <td><?= $rec['planted_at'] ?? '―' ?></td>
                   <td><?= $rec['harvested_at'] ?? '―' ?></td>
+                  <td class="td-memo"><?= htmlspecialchars($rec['memo'] ?? '', ENT_QUOTES, 'UTF-8') ?: '―' ?></td>
                   <td>
                     <span class="status-badge status-<?= htmlspecialchars($rec['status'], ENT_QUOTES, 'UTF-8') ?>">
                       <?= htmlspecialchars($status_labels[$rec['status']] ?? $rec['status'], ENT_QUOTES, 'UTF-8') ?>

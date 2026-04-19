@@ -717,6 +717,15 @@ nav a.active {
 
 .td-veg { font-weight: 700; }
 
+.td-memo {
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-mid);
+  font-size: 12px;
+}
+
 .td-plot { color: var(--text-mid); }
 .td-plot-pos {
   display: block;
