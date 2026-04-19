@@ -572,6 +572,12 @@ nav a.active {
   color: var(--text-dark);
 }
 
+.modal-variety {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
 .modal-close {
   background: var(--parchment);
   border: none;

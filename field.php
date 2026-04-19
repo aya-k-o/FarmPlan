@@ -48,6 +48,7 @@ if ($field_id === null) {
             ps.memo,
             v.id         AS vegetable_id,
             v.name       AS veg_name,
+            v.variety,
             v.family
         FROM plots p
         LEFT JOIN plot_seasons ps
@@ -181,6 +182,7 @@ if ($field_id === null) {
           <?php
             $family_class = $plot && $plot['family'] ? familyClass($plot['family']) : 'empty';
             $veg_name     = $plot['veg_name'] ?? '';
+            $variety      = $plot['variety'] ?? '';
             $season_id    = $plot['season_id'] ?? '';
             $status       = $plot['status'] ?? '';
             $planted_at   = $plot['planted_at'] ?? '';
@@ -193,6 +195,7 @@ if ($field_id === null) {
             data-plot-id="<?= htmlspecialchars($plot_id, ENT_QUOTES, 'UTF-8') ?>"
             data-season-id="<?= htmlspecialchars($season_id, ENT_QUOTES, 'UTF-8') ?>"
             data-veg-name="<?= htmlspecialchars($veg_name, ENT_QUOTES, 'UTF-8') ?>"
+            data-variety="<?= htmlspecialchars($variety, ENT_QUOTES, 'UTF-8') ?>"
             data-family="<?= htmlspecialchars($plot['family'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
             data-status="<?= htmlspecialchars($status, ENT_QUOTES, 'UTF-8') ?>"
             data-planted-at="<?= htmlspecialchars($planted_at, ENT_QUOTES, 'UTF-8') ?>"
@@ -226,6 +229,7 @@ if ($field_id === null) {
       <div>
         <div class="modal-plot-label" id="modalPlotLabel"></div>
         <div class="modal-veg-name" id="modalVegName"></div>
+        <div class="modal-variety" id="modalVariety"></div>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
@@ -336,6 +340,7 @@ function openModal(el) {
   const plotId    = el.dataset.plotId;
   const seasonId  = el.dataset.seasonId;
   const vegName   = el.dataset.vegName;
+  const variety   = el.dataset.variety;
   const family    = el.dataset.family;
   const status    = el.dataset.status;
   const plantedAt = el.dataset.plantedAt;
@@ -360,6 +365,7 @@ function openModal(el) {
   } else {
     // 栽培中 or 計画済み
     document.getElementById('modalVegName').textContent = vegName;
+    document.getElementById('modalVariety').textContent = variety ? '（' + variety + '）' : '';
     document.getElementById('modalFamily').textContent = family;
     document.getElementById('editQuantity').value   = quantity;
     document.getElementById('editPlantedAt').value  = plantedAt;
