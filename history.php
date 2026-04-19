@@ -31,6 +31,7 @@ $sql = '
         ps.quantity,
         ps.memo,
         v.name         AS veg_name,
+        v.variety,
         v.family,
         f.name         AS field_name,
         p.row_num,
@@ -208,7 +209,12 @@ $status_labels = [
               <?php foreach ($records as $rec): ?>
                 <tr>
                   <td><input type="checkbox" name="season_ids[]" value="<?= $rec['season_id'] ?>"></td>
-                  <td class="td-veg"><?= htmlspecialchars($rec['veg_name'], ENT_QUOTES, 'UTF-8') ?></td>
+                  <td class="td-veg">
+                    <?= htmlspecialchars($rec['veg_name'], ENT_QUOTES, 'UTF-8') ?>
+                    <?php if (!empty($rec['variety'])): ?>
+                      <span class="td-variety">（<?= htmlspecialchars($rec['variety'], ENT_QUOTES, 'UTF-8') ?>）</span>
+                    <?php endif; ?>
+                  </td>
                   <td>
                     <span class="family-tag family-<?= familyClass($rec['family']) ?>">
                       <?= htmlspecialchars($rec['family'], ENT_QUOTES, 'UTF-8') ?>
