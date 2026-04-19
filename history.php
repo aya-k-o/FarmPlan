@@ -34,14 +34,11 @@ $sql = '
         v.family,
         f.name         AS field_name,
         p.row_num,
-        p.col_num,
-        h.harvested_at AS harvest_date,
-        h.weight
+        p.col_num
     FROM plot_seasons ps
     JOIN plots p       ON p.id = ps.plot_id
     JOIN fields f      ON f.id = p.field_id
     JOIN vegetables v  ON v.id = ps.vegetable_id
-    LEFT JOIN harvests h ON h.plot_season_id = ps.id
     WHERE f.user_id = ?
       AND ps.mode = "actual"
       AND ps.year = ?
@@ -203,7 +200,6 @@ $status_labels = [
                 <th>畑・区画</th>
                 <th>植え付け日</th>
                 <th>収穫日</th>
-                <th>重量</th>
                 <th>ステータス</th>
               </tr>
             </thead>
@@ -223,8 +219,7 @@ $status_labels = [
                     <span class="td-plot-pos"><?= $rec['row_num'] ?>行<?= $rec['col_num'] ?>列</span>
                   </td>
                   <td><?= $rec['planted_at'] ?? '―' ?></td>
-                  <td><?= $rec['harvest_date'] ?? '―' ?></td>
-                  <td><?= $rec['weight'] ? $rec['weight'] . 'kg' : '―' ?></td>
+                  <td><?= $rec['harvested_at'] ?? '―' ?></td>
                   <td>
                     <span class="status-badge status-<?= htmlspecialchars($rec['status'], ENT_QUOTES, 'UTF-8') ?>">
                       <?= htmlspecialchars($status_labels[$rec['status']] ?? $rec['status'], ENT_QUOTES, 'UTF-8') ?>
