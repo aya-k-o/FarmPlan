@@ -118,17 +118,18 @@ harvests        収穫記録
 git clone https://github.com/aya-k-o/farmplan.git
 cd farmplan
 
-# .envを作成（内容は下記を参考に設定）
-cp .env.example .env
+# .envを作成
+copy .env.example .env   # Windows
+# cp .env.example .env   # Mac / Linux
 ```
 
-`.env` の内容：
+作成された `.env` をテキストエディタで開き、パスワードを任意の文字列に設定してください：
 
 ```
 DB_NAME=farmplan
 DB_USER=farmplan_user
-DB_PASS=your_password
-DB_ROOT_PASS=your_root_password
+DB_PASS=任意のパスワード
+DB_ROOT_PASS=任意のパスワード
 ```
 
 ```bash
