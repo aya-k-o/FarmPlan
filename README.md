@@ -114,16 +114,28 @@ harvests        収穫記録
 
 ## ローカル環境構築
 
+> ⚠️ 事前に [Docker Desktop](https://www.docker.com/products/docker-desktop/) をインストールして起動しておいてください。
+
+**① リポジトリをクローンする**
+
+クローンしたいフォルダに移動してから実行してください。  
+（実行するとカレントフォルダに `farmplan` フォルダが自動作成されます）
+
 ```bash
 git clone https://github.com/aya-k-o/farmplan.git
 cd farmplan
-
-# .envを作成
-copy .env.example .env   # Windows
-# cp .env.example .env   # Mac / Linux
 ```
 
-作成された `.env` をテキストエディタで開き、パスワードを任意の文字列に設定してください：
+> 💡 Windowsでデスクトップに作りたい場合は先に `cd C:\Users\ユーザー名\OneDrive\Desktop` で移動してください。
+
+**② .envファイルを作成する**
+
+```bash
+copy .env.example .env    # Windows
+cp .env.example .env      # Mac / Linux
+```
+
+作成された `.env` をメモ帳などで開き、パスワードを任意の文字列に書き換えてください：
 
 ```
 DB_NAME=farmplan
@@ -132,16 +144,28 @@ DB_PASS=任意のパスワード
 DB_ROOT_PASS=任意のパスワード
 ```
 
+> 💡 パスワードはローカル専用なので何でもOKです。
+
+**③ Dockerを起動する**
+
 ```bash
-# Dockerを起動
 docker-compose up -d
 ```
 
-起動後：
+3つのコンテナが `✔` になれば起動成功です。
+
+```
+✔ Container farmplan_db
+✔ Container farmplan_php
+✔ Container farmplan_phpmyadmin
+```
+
+**④ ブラウザで確認する**
+
 - アプリ：http://localhost:8080
 - phpMyAdmin：http://localhost:8081
 
-> ※ デモ環境は **https://ayakomochi.xsrv.jp/farmplan/** で公開中です。
+> ※ デモ環境は **https://ayakomochi.xsrv.jp/farmplan/** で公開中です。ローカル環境構築なしですぐ試せます。
 
 ---
 
