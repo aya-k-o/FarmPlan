@@ -21,13 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 空欄チェック
     if ($name === '')     $errors[] = 'ユーザー名を入力してください。';
-    if ($email === '')    $errors[] = 'メールアドレスを入力してください。';
+    if ($email === '')    $errors[] = 'ログインIDを入力してください。';
     if ($password === '') $errors[] = 'パスワードを入力してください。';
-
-    // メール形式チェック
-    if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'メールアドレスの形式が正しくありません。';
-    }
 
     // パスワード長チェック
     if ($password !== '' && mb_strlen($password) < 8) {
@@ -39,12 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'パスワードが一致しません。';
     }
 
-    // 重複メールチェック（バリデーション通過後のみDB確認）
+    // ログインID重複チェック
     if (empty($errors)) {
         $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
         $stmt->execute([$email]);
         if ($stmt->fetch()) {
-            $errors[] = 'このメールアドレスはすでに登録されています。';
+            $errors[] = 'このログインIDはすでに使用されています。';
         }
     }
 
@@ -115,15 +110,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="email">メールアドレス</label>
+        <label class="form-label" for="email">ログインID</label>
         <input
           class="form-input"
-          type="email"
+          type="text"
           id="email"
           name="email"
           value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-          placeholder="例：taro@example.com"
-          autocomplete="email"
+          placeholder="例：ayako123"
+          autocomplete="username"
         >
       </div>
 

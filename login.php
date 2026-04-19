@@ -23,9 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 空欄チェック
     if ($email === '' || $password === '') {
-        $error = 'メールアドレスとパスワードを入力してください。';
+        $error = 'ログインIDとパスワードを入力してください。';
     } else {
-        // メールアドレスでユーザーを検索
+        // ログインIDでユーザーを検索
         $stmt = $pdo->prepare('SELECT id, name, password_hash FROM users WHERE email = ?');
         $stmt->execute([$email]);
         $user = $stmt->fetch();
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } else {
             // 存在しないメールとパスワード不一致を同じメッセージにする（ユーザー列挙攻撃対策）
-            $error = 'メールアドレスまたはパスワードが正しくありません。';
+            $error = 'ログインIDまたはパスワードが正しくありません。';
         }
     }
 }
@@ -91,15 +91,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="post" action="login.php">
 
       <div class="form-group">
-        <label class="form-label" for="email">メールアドレス</label>
+        <label class="form-label" for="email">ログインID</label>
         <input
           class="form-input"
-          type="email"
+          type="text"
           id="email"
           name="email"
           value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-          placeholder="例：taro@example.com"
-          autocomplete="email"
+          placeholder="ログインIDを入力"
+          autocomplete="username"
         >
       </div>
 
