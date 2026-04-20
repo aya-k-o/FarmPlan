@@ -180,7 +180,4 @@ docker-compose up -d
 
 ---
 
-## 作者
-
-香川 紋子  
 [GitHub](https://github.com/aya-k-o/farmplan)
