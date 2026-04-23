@@ -82,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <a href="history.php">栽培記録</a>
     <a href="settings.php">設定</a>
   </nav>
+  <a href="logout.php" class="nav-logout">ログアウト</a>
 </header>
 
 <main class="main-content">

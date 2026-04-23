@@ -81,6 +81,23 @@ nav a.active {
   color: #ffffff;
 }
 
+.nav-logout {
+  color: #b8d89a;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(184, 216, 154, 0.4);
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+  justify-self: end;
+}
+
+.nav-logout:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
 /* ===== 認証ページ共通（register / login） ===== */
 .auth-wrapper {
   display: flex;
