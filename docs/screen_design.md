@@ -218,6 +218,8 @@
 | パスワード変更 | 現在のパスワード確認後、新しいパスワードをハッシュ化して更新 |
 | 野菜マスタ管理 | 独自の野菜を追加・削除。削除時は外部キー制約でエラーハンドリング |
 
+> ログアウトは全ページ共通のヘッダー右端に配置。野菜マスタが増えても常にアクセスできる。
+
 ---
 
 ## セキュリティ対策まとめ
@@ -226,12 +228,14 @@
 |------|---------|---------|
 | パスワード暗号化 | `password_hash()` / `password_verify()` | register.php / login.php |
 | SQLインジェクション対策 | PDOプリペアドステートメント（prepare + execute） | 全PHPファイル |
-| XSS対策 | `htmlspecialchars()`による出力エスケープ | 全PHPファイル |
+| XSS対策 | `htmlspecialchars()`による出力エスケープ / WAF（XSS対策ON） | 全PHPファイル / Xserver |
 | セッション固定攻撃対策 | ログイン後に`session_regenerate_id(true)`を実行 | login.php |
 | 認証ガード | 全ページでセッション確認、未ログインはリダイレクト | 全ページ先頭 |
 | 所有権確認 | `WHERE id=? AND user_id=?`でDBレベルで制限 | field.php / plot_action.php |
 | 機密情報管理 | `.env`で管理、`.gitignore`でGit除外 | db_connect.php |
 | URLエンコード | `encodeURIComponent()`でAJAXパラメータを安全に送信 | field.php（JS部分） |
+| WAF | XSS・SQL・ファイル・コマンド・PHP対策をON | Xserver WAF設定 |
+| トランザクション | 畑作成時のfields+plots連続INSERTをbeginTransaction/commit/rollBackで管理 | field_create.php |
 
 ---
 
