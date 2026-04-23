@@ -36,21 +36,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        // fieldsテーブルに畑を登録
-        $stmt = $pdo->prepare('INSERT INTO fields (user_id, name, grid_rows, grid_cols) VALUES (?, ?, ?, ?)');
-        $stmt->execute([$user_id, $name, $grid_rows, $grid_cols]);
-        $field_id = $pdo->lastInsertId();
+        try {
+            $pdo->beginTransaction();
 
-        // plotsテーブルに全区画を生成（grid_rows × grid_cols 個）
-        $stmt = $pdo->prepare('INSERT INTO plots (field_id, row_num, col_num) VALUES (?, ?, ?)');
-        for ($r = 1; $r <= $grid_rows; $r++) {
-            for ($c = 1; $c <= $grid_cols; $c++) {
-                $stmt->execute([$field_id, $r, $c]);
+            // fieldsテーブルに畑を登録
+            $stmt = $pdo->prepare('INSERT INTO fields (user_id, name, grid_rows, grid_cols) VALUES (?, ?, ?, ?)');
+            $stmt->execute([$user_id, $name, $grid_rows, $grid_cols]);
+            $field_id = $pdo->lastInsertId();
+
+            // plotsテーブルに全区画を生成（grid_rows × grid_cols 個）
+            $stmt = $pdo->prepare('INSERT INTO plots (field_id, row_num, col_num) VALUES (?, ?, ?)');
+            for ($r = 1; $r <= $grid_rows; $r++) {
+                for ($c = 1; $c <= $grid_cols; $c++) {
+                    $stmt->execute([$field_id, $r, $c]);
+                }
             }
-        }
 
-        header('Location: field.php?id=' . $field_id);
-        exit;
+            $pdo->commit();
+            header('Location: field.php?id=' . $field_id);
+            exit;
+
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            $errors[] = '畑の作成に失敗しました。もう一度お試しください。';
+        }
     }
 }
 ?>
