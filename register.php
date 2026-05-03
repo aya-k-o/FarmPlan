@@ -11,30 +11,25 @@ $success = false;
 // ---- POSTされたとき処理 ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // 入力値を取得（trim：前後の空白を除去）
     $name     = trim($_POST['name']     ?? '');
     $email    = trim($_POST['email']    ?? '');
     $password = trim($_POST['password'] ?? '');
     $confirm  = trim($_POST['confirm']  ?? '');
 
     // ---- バリデーション ----
-
-    // 空欄チェック
     if ($name === '')     $errors[] = 'ユーザー名を入力してください。';
     if ($email === '')    $errors[] = 'ログインIDを入力してください。';
     if ($password === '') $errors[] = 'パスワードを入力してください。';
 
-    // パスワード長チェック
     if ($password !== '' && mb_strlen($password) < 8) {
         $errors[] = 'パスワードは8文字以上で入力してください。';
     }
 
-    // パスワード一致チェック
     if ($password !== '' && $password !== $confirm) {
         $errors[] = 'パスワードが一致しません。';
     }
 
-    // ログインID重複チェック
+    // DB重複チェックは他のバリデーション通過後のみ実行（不要なDBアクセスを防ぐ）
     if (empty($errors)) {
         $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
         $stmt->execute([$email]);
@@ -50,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare('INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)');
         $stmt->execute([$name, $email, $hash]);
 
-        // 登録成功 → ログインページへリダイレクト
         header('Location: login.php?registered=1');
         exit;
     }

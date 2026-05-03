@@ -25,24 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($email === '' || $password === '') {
         $error = 'ログインIDとパスワードを入力してください。';
     } else {
-        // ログインIDでユーザーを検索
         $stmt = $pdo->prepare('SELECT id, name, password_hash FROM users WHERE email = ?');
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 
-        // ユーザーが存在し、パスワードが一致するか確認
         if ($user && password_verify($password, $user['password_hash'])) {
             // セッション固定攻撃対策：ログイン後にセッションIDを再生成
             session_regenerate_id(true);
 
-            // セッションにユーザー情報を保存
             $_SESSION['user_id']   = $user['id'];
             $_SESSION['user_name'] = $user['name'];
 
             header('Location: index.php');
             exit;
         } else {
-            // 存在しないメールとパスワード不一致を同じメッセージにする（ユーザー列挙攻撃対策）
+            // IDとPW不一致を同じメッセージにしてユーザー列挙攻撃を防ぐ
             $error = 'ログインIDまたはパスワードが正しくありません。';
         }
     }

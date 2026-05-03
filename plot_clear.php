@@ -25,7 +25,6 @@ if (!$stmt->fetch()) {
 }
 
 if ($target === 'all') {
-    // 畑の全栽培記録を削除
     $stmt = $pdo->prepare('
         DELETE ps FROM plot_seasons ps
         JOIN plots p ON p.id = ps.plot_id
@@ -33,7 +32,6 @@ if ($target === 'all') {
     ');
     $stmt->execute([$field_id]);
 } elseif ($target === 'season') {
-    // 今年の栽培記録のみ削除
     $stmt = $pdo->prepare('
         DELETE ps FROM plot_seasons ps
         JOIN plots p ON p.id = ps.plot_id
