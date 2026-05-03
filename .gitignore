@@ -4,6 +4,9 @@
 # MySQLのデータ本体（コンテナ内で管理するため不要）
 docker/mysql/data/
 
+# 学習用コメント付きファイル（ローカルのみ保持）
+docs/learning/
+
 # OS・エディタ系の不要ファイル
 .DS_Store
 Thumbs.db
