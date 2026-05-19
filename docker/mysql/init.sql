@@ -88,6 +88,20 @@ CREATE TABLE IF NOT EXISTS harvests (
   FOREIGN KEY (plot_season_id) REFERENCES plot_seasons(id) ON DELETE CASCADE
 );
 
+-- 農作業タスク管理
+CREATE TABLE IF NOT EXISTS tasks (
+  id          INT UNSIGNED  AUTO_INCREMENT PRIMARY KEY,
+  user_id     INT UNSIGNED  NOT NULL,
+  field_id    INT UNSIGNED,
+  title       VARCHAR(255)  NOT NULL,
+  description TEXT,
+  due_date    DATE,
+  is_completed BOOLEAN      DEFAULT FALSE,
+  created_at  DATETIME      DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id)  REFERENCES users(id)  ON DELETE CASCADE,
+  FOREIGN KEY (field_id) REFERENCES fields(id) ON DELETE CASCADE
+);
+
 -- =============================================
 -- サンプルデータ（野菜マスタ）
 -- =============================================
