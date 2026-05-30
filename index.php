@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id'])) {
 require 'db_connect.php';
 
 $user_id   = $_SESSION['user_id'];
-$user_name = $_SESSION['user_name'];
+$user_name = $_SESSION['user_name'] ?? '';
 
 // ---- 栽培中の区画数を取得 ----
 $stmt = $pdo->prepare('
