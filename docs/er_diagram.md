@@ -40,6 +40,7 @@ erDiagram
         int id PK
         int plot_id FK
         int vegetable_id FK
+        int year
         int quantity
         date planted_at
         date harvested_at
